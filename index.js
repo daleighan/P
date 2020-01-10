@@ -1,5 +1,3 @@
-// Implement a promise class with resolve, reject, .then, .catch and .all
-
 class P {
   constructor(action) {
     this.state = 'pending';
