@@ -81,15 +81,20 @@ class P {
   }
 
   static iterate(iter, required = iter.length, useIter = true) {
+    const output = [];
     return new P((resolve, reject) => {
-      const output = [];
       let err = null;
-      for (let prom of iter) {
+      for (let i = 0; i < iter.length; i++) {
+        let prom = iter[i];
         prom
           .then(val => {
-            output.push(val);
+            output.push({i, val});
             if (output.length === required) {
-              resolve(useIter ? output : output[0]);
+              resolve(
+                useIter
+                  ? output.sort((a, b) => a.i - b.i).map(each => each.val)
+                  : output[0],
+              );
             }
           })
           .catch(e => reject(e));
@@ -113,6 +118,5 @@ class P {
     return new P((_, reject) => reject(reason));
   }
 }
-
 
 module.exports = P;

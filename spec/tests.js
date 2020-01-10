@@ -83,18 +83,29 @@ describe('P', function() {
     const p = test('a')
       .then(val => P.reject('Error Message'))
       .then(next => {
-        done.fail()
+        done.fail();
       })
       .catch(e => {
         expect(e).toEqual('Error Message');
         done();
       });
   });
-  it('Finally should be called even if there is a rejection', done => {
-    const p = test('a')
-      .then(val => P.reject('Error Message'))
-      .then(next => next)
-      .catch(e => e)
-      .finally(() => done());
+  it('P.all should return an iterable of all resolved values from an iterable of promises', done => {
+    const iter = [test('a'), test('b'), test('c')];
+    P.all(iter)
+      .then(final => {
+        expect(final).toEqual(['a', 'b', 'c']);
+        done();
+      })
+      .catch(e => done.fail());
+  });
+  it('P.all should return values in the order they were called regardless of which returns first', done => {
+    const iter = [test('a'), test('b'), test('c', 50)];
+    P.all(iter)
+      .then(final => {
+        expect(final).toEqual(['a', 'b', 'c']);
+        done();
+      })
+      .catch(e => done.fail());
   });
 });
