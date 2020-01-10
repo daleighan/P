@@ -79,24 +79,33 @@ class P {
     return this.then(cb, cb);
   }
 
-  static iterate(iter, required = iter.length, useIter = true) {
-    const output = [];
+  static iterate(iter, length = iter.length) {
+    let output = [];
+    let finished = false;
     return new P((resolve, reject) => {
-      let err = null;
       for (let i = 0; i < iter.length; i++) {
         let prom = iter[i];
-        prom
-          .then(val => {
-            output.push({i, val});
-            if (output.length === required) {
-              resolve(
-                useIter
-                  ? output.sort((a, b) => a.i - b.i).map(each => each.val)
-                  : output[0].val,
-              );
+        prom.then(
+          value => {
+            output.push({i, value});
+            if (output.length === length) {
+              if (!finished) {
+                resolve(
+                  output.length > 1
+                    ? output.sort((a, b) => a.i - b.i).map(entry => entry.value)
+                    : output[0].value,
+                );
+                finished = true;
+              }
             }
-          })
-          .catch(e => reject(e));
+          },
+          err => {
+            if (!finished) {
+              finished = true;
+              reject(err);
+            }
+          },
+        );
       }
     });
   }
