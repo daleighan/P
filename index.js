@@ -93,7 +93,7 @@ class P {
               resolve(
                 useIter
                   ? output.sort((a, b) => a.i - b.i).map(each => each.val)
-                  : output[0],
+                  : output[0].val,
               );
             }
           })
