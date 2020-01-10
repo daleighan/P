@@ -43,9 +43,58 @@ describe('P', function() {
     expect(p).toBeInstanceOf(P);
   });
   it('Should be thennable', done => {
-    const p = test('a').then(val => done()).catch(e => done.fail());
+    const p = test('a')
+      .then(val => done())
+      .catch(e => done.fail());
   });
   it('Should catch failures', done => {
-    const p = test().then(val => done.fail()).catch(e => done());
+    const p = test()
+      .then(val => done.fail())
+      .catch(e => done());
+  });
+  it('Should be able to chain promises together', done => {
+    const p = test('a')
+      .then(val => test(val))
+      .then(next => {
+        expect(next).toEqual('a');
+        done();
+      })
+      .catch(e => done.fail());
+  });
+  it('Values should pass down the promise chain', done => {
+    const p = test('a')
+      .then(val => test(val + 'b'))
+      .then(next => {
+        expect(next).toEqual('ab');
+        done();
+      })
+      .catch(e => done.fail());
+  });
+  it('P.resolve should cause the chain to resolve with a particular val', done => {
+    const p = test('a')
+      .then(val => P.resolve('newVal'))
+      .then(next => {
+        expect(next).toEqual('newVal');
+        done();
+      })
+      .catch(e => done.fail());
+  });
+  it('P.reject should cause the chain to reject with a particular error', done => {
+    const p = test('a')
+      .then(val => P.reject('Error Message'))
+      .then(next => {
+        done.fail()
+      })
+      .catch(e => {
+        expect(e).toEqual('Error Message');
+        done();
+      });
+  });
+  it('Finally should be called even if there is a rejection', done => {
+    const p = test('a')
+      .then(val => P.reject('Error Message'))
+      .then(next => next)
+      .catch(e => e)
+      .finally(() => done());
   });
 });
