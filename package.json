@@ -1,5 +1,5 @@
 {
-  "name": "p",
+  "name": "@daleighan/p",
   "version": "0.1.0",
   "description": "An implementation of JavaScript Promises",
   "main": "index.js",
