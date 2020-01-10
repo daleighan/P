@@ -1,3 +1,5 @@
+// Implement a promise class with resolve, reject, .then, .catch and .all
+
 class P {
   constructor(action) {
     this.state = 'pending';
@@ -44,7 +46,6 @@ class P {
   }
 
   then(onResolve = () => {}, onReject = this.catch) {
-    const passedVal = this.value;
     return new P((resolve, reject) => {
       const _onResolve = val => {
         try {
