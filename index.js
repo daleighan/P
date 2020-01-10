@@ -114,6 +114,9 @@ class P {
   }
 }
 
+
+module.exports = P;
+/*
 const asyncFunc = (data, ecb, scb, timeout) => {
   setTimeout(() => {
     if (!data) {
@@ -144,7 +147,7 @@ const p = test('Alex')
   .then(final => console.log('final', final))
   .catch(e => console.log('error', e))
   .finally(data => console.log('finally!!!!'));
-/* 
+ 
 const iter = [test('a'), test('b'), test('c', 200)];
 P.all(iter)
   .then(final => console.log('final', final))

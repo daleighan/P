@@ -1,0 +1,25 @@
+{
+  "name": "p",
+  "version": "0.1.0",
+  "description": "An implementation of JavaScript Promises",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine spec/tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daleighan/P.git"
+  },
+  "keywords": [
+    "promises"
+  ],
+  "author": "Alex Leigh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daleighan/P/issues"
+  },
+  "homepage": "https://github.com/daleighan/P#readme",
+  "dependencies": {
+    "jasmine": "^3.5.0"
+  }
+}
