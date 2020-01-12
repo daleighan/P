@@ -15,7 +15,11 @@ class P {
       this.value = value;
       this.callObservers();
     };
-    action(resolve, reject);
+    try {
+      action(resolve, reject);
+    } catch(e) {
+      reject(e);
+    }
   }
 
   callObservers() {
@@ -60,7 +64,7 @@ class P {
     return this.then(cb, cb);
   }
 
-  static iterate(iter, length = iter.length) {
+  static iterate(iter, limit = iter.length) {
     let output = [];
     let finished = false;
     return new P((resolve, reject) => {
@@ -69,7 +73,7 @@ class P {
         prom.then(
           value => {
             output.push({i, value});
-            if (output.length === length) {
+            if (output.length === limit) {
               if (!finished) {
                 resolve(
                   output.length > 1
