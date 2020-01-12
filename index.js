@@ -1,78 +1,59 @@
-// Implement a promise class with resolve, reject, .then, .catch and .all
-
 class P {
   constructor(action) {
     this.state = 'pending';
-    this.observers = [];
     this.value = null;
-    this.resolve = this.resolve.bind(this);
-    this.reject = this.reject.bind(this);
+    this.onResolve = () => {};
+    this.onReject = () => {};
     this.catch = this.catch.bind(this);
-    try {
-      action(this.resolve, this.reject);
-    } catch (e) {
-      this.reject(e);
-    }
-  }
-
-  execObservers() {
-    for (let observer of this.observers) {
-      if (this.state === 'fulfilled') {
-        observer.onResolve(this.value);
-      } else if (this.state === 'rejected') {
-        observer.onReject(this.value);
+    const resolve = value => handleChange(value, 'fulfilled');
+    const reject = err => handleChange(err, 'rejected');
+    const handleChange = (value, newState) => {
+      if (value && value instanceof P) {
+        return value.then(resolve, reject);
       }
-    }
+      this.state = newState;
+      this.value = value;
+      this.callObservers();
+    };
+    action(resolve, reject);
   }
 
-  handleSettling(val, newStatus) {
-    if (this.state !== 'pending') {
-      return;
+  callObservers() {
+    if (this.state === 'fulfilled') {
+      this.onResolve(this.value);
+    } else {
+      this.onReject(this.value);
     }
-    if (val && typeof val === 'object' && typeof val.then === 'function') {
-      return val.then(this.resolve, this.reject);
-    }
-    this.state = newStatus;
-    this.value = val;
-    this.execObservers();
-  }
-
-  resolve(val) {
-    this.handleSettling(val, 'fulfilled');
-  }
-
-  reject(err) {
-    this.handleSettling(err, 'rejected');
   }
 
   then(onResolve = () => {}, onReject = this.catch) {
     return new P((resolve, reject) => {
       const _onResolve = val => {
         try {
-          resolve(onResolve(this.value));
+          resolve(onResolve(val));
         } catch (e) {
-          reject(e);
+          reject(onReject(err));
         }
       };
       const _onReject = err => {
         if (typeof onReject === 'function') {
-          reject(onReject(err));
-        } else {
-          reject(err);
+          return reject(onReject(err));
         }
+        reject(err);
       };
       if (this.state === 'fulfilled') {
         return _onResolve(this.value);
-      } else if (this.state === 'rejected') {
-        return _onReject(this.value);
-      } else {
-        this.observers.push({onResolve: _onResolve, onReject: _onReject});
       }
+      if (this.state === 'rejected') {
+        return _onReject(this.value);
+      }
+      this.onResolve = _onResolve;
+      this.onReject = _onReject;
     });
   }
 
-  catch(reject) {
-    return this.then(null, reject);
+  catch(rejectCb) {
+    return this.then(undefined, rejectCb);
   }
 
   finally(cb) {
