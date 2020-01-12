@@ -17,7 +17,7 @@ class P {
     };
     try {
       action(resolve, reject);
-    } catch(e) {
+    } catch (e) {
       reject(e);
     }
   }
@@ -30,7 +30,7 @@ class P {
     }
   }
 
-  then(onResolve = () => {}, onReject = this.catch) {
+  then(onResolve = () => {}, onReject = err => this.catch(err)) {
     return new P((resolve, reject) => {
       const _onResolve = val => {
         try {
